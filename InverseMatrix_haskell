@@ -1,0 +1,70 @@
+--import Data.Ratio
+
+--Transponation
+transpose:: [[Double]] -> [[Double]]
+transpose ([]:_) = []
+{--Create list of the first element of every string
+and repeat with string's tails--}
+transpose x = map(head) x : transpose (map(tail) x)
+
+deleteElem:: [Double] -> Int -> [Double]
+deleteElem [] _ = []
+deleteElem (x:xs) 1 = xs
+deleteElem (x:xs) n = x : deleteElem xs (n-1)
+
+elemNum:: [Double] -> Int -> Double
+--elemNum _ 0 = 0
+elemNum (x:xs) 1 = x
+elemNum (x:xs) i = elemNum xs (i-1)
+
+createSmallMatrix:: [[Double]] -> Int -> Int -> [[Double]]
+--createSmallMatrix _ 0 = []
+createSmallMatrix [] _ _ = []
+createSmallMatrix (x:xs) i 1 = createSmallMatrix xs i 0
+createSmallMatrix (x:xs) i j = deleteElem x i : createSmallMatrix xs i (j - 1)
+
+-- Раскладываем всегда по первой строке, индекс строки для удаления не нужен в параметрах
+det:: [[Double]] -> [Int] -> Double
+det [[x]] _ = x
+det _ [] = 0
+det (x:xs) (i:is) = elemNum x i * determine (createSmallMatrix xs i 0) - det (x:xs) is
+
+determine:: [[Double]] -> Double
+determine [[x]] = x
+determine [[a11, a12], [a21, a22]] = a11 * a22 - a12 * a21
+determine x = det x indexs 
+                   where 
+                   indexs = [1 .. length (head x)]
+                   
+--Minor
+minor:: [[Double]] -> Int -> Int -> Double
+minor x i j = determine (createSmallMatrix x i j)
+
+-- Reverse Matrix
+
+reverseMatrix:: [[Double]] -> [[Double]]
+reverseMatrix x = multiNumMatr ( 1 / (determine x)) (transpose (matrAlgAdd x))
+
+multiNumMatr:: Double -> [[Double]] -> [[Double]]
+multiNumMatr _ [] = []
+multiNumMatr n (x:xs) = map(n*) x : multiNumMatr n xs
+
+matrAlgAdd:: [[Double]] -> [[Double]]
+matrAlgAdd x = matrAlgAddAll x iIndex jIndex
+               where
+               iIndex = [i | i <- [1 .. length (head x)]] 
+               jIndex = [j | j <- [1 .. length (head x)]] 
+
+
+matrAlgAddStr:: [[Double]] -> [Int] -> [Int] -> [Double]
+matrAlgAddStr _ [] _ = []
+matrAlgAddStr _ _ [] = []
+matrAlgAddStr (x:xs) (i:is) (j:js)
+                                    |even (i+j) = minor (x:xs) i j : matrAlgAddStr (x:xs) is (j:js)
+                                    |otherwise =  (-1) * minor (x:xs) i j : matrAlgAddStr (x:xs) is (j:js)
+
+matrAlgAddAll:: [[Double]] -> [Int] -> [Int] -> [[Double]]
+matrAlgAddAll _ _ [] = []
+matrAlgAddAll x i jIndex = matrAlgAddStr x i jIndex : matrAlgAddAll x i js
+                           where
+                           (j:js) = jIndex
