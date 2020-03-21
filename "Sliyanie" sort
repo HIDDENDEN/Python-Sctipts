@@ -1,0 +1,28 @@
+def merge(aList, bList):
+    curList = list()
+    aIndex, bIndex = 0, 0
+    # print("len(aList), len(bList) = ", len(aList), len(bList), sep=" ")
+    while ((aIndex != len(aList)) or (bIndex != len(bList))):
+        if aIndex == len(aList):
+            while bIndex != len(bList):
+                curList.append(bList[bIndex])
+                bIndex += 1
+        elif bIndex == len(bList):
+            while aIndex != len(aList):
+                curList.append(aList[aIndex])
+                aIndex += 1
+        else:
+            if aList[aIndex] <= bList[bIndex]:
+                curList.append(aList[aIndex])
+                aIndex += 1
+            else:
+                curList.append(bList[bIndex])
+                bIndex += 1
+    # print("aIndex, bIndex = ", aIndex, bIndex, sep=" ")
+    return curList
+
+
+myList1 = list(map(int, input().split()))
+myList2 = list(map(int, input().split()))
+
+print(" ".join(map(str, merge(myList1, myList2))))
