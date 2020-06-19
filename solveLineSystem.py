@@ -19,4 +19,4 @@ if b != 0:
     (a, b, e) = (a - c, b - d, e - f)
 y = f / d
 x = e / a
-print(x, y, sep=" ")
+print(x, y)
